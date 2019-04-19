@@ -6,6 +6,7 @@
 -encoding 'UTF-8'
 -quiet 
 -windowtitle 'cj.studio.util.reactor.ultimate 1.0.0 API'
+'/Users/caroceanjofers/studio/cj.studio.util.reactor/cj.studio.util.reactor.ultimate/src/cj/studio/util/reactor/IServiceProvider.java'
 '/Users/caroceanjofers/studio/cj.studio.util.reactor/cj.studio.util.reactor.ultimate/src/cj/studio/util/reactor/IKeySelector.java'
 '/Users/caroceanjofers/studio/cj.studio.util.reactor/cj.studio.util.reactor.ultimate/src/cj/studio/util/reactor/IEventQueue.java'
 '/Users/caroceanjofers/studio/cj.studio.util.reactor/cj.studio.util.reactor.ultimate/src/cj/studio/util/reactor/IPipelineCombination.java'

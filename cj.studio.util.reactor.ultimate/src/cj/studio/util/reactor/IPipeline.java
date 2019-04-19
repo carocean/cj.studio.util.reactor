@@ -9,5 +9,6 @@ String key();
 	void nextFlow(Event e, IValve formthis);
 
 	void remove(IValve valve);
+	IServiceProvider site();
 
 }

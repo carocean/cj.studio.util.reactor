@@ -7,11 +7,12 @@ import java.util.concurrent.ConcurrentHashMap;
 	Map<String, ISelectionKey> keys;
 	private IPipelineCombination combination;
 	IEventQueue queue;
-
-	public KeySelector(IEventQueue queue, IPipelineCombination combination) {
+	IServiceProvider parent;
+	public KeySelector(IEventQueue queue, IPipelineCombination combination,IServiceProvider parent) {
 		keys = new ConcurrentHashMap<String, ISelectionKey>();
 		this.combination = combination;
 		this.queue = queue;
+		this.parent=parent;
 	}
 
 	@Override
@@ -30,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 			String key = e.getKey();
 			ISelectionKey sk = keys.get(key);
 			if (sk == null) {
-				IPipeline pipeline = new DefaultPipeline(key);
+				IPipeline pipeline = new DefaultPipeline(key,parent);
 				sk = new SelectionKey(key, pipeline);
 				sk.addEvent(e);
 				combination.combine(pipeline);

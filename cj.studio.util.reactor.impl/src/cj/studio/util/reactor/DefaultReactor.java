@@ -17,7 +17,7 @@ public class DefaultReactor extends Reactor {
 	protected void onopen(int workTreadCount, int capacity, IPipelineCombination assembly) {
 		this.queue = new DefaultEventQueue(capacity);
 		this.exe = Executors.newFixedThreadPool(workTreadCount);
-		selector = new KeySelector(queue, assembly);
+		selector = new KeySelector(queue, assembly,this);
 		for (int i = 0; i < workTreadCount; i++) {
 			IEventLooper looper = new EventLooper(selector);
 			exe.submit(looper);

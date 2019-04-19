@@ -3,11 +3,16 @@ package cj.studio.util.reactor;
  class DefaultPipeline implements IPipeline {
 	LinkEntry head;
 	String key;
+	private IServiceProvider site;
 
-	public DefaultPipeline(String key) {
+	public DefaultPipeline(String key,IServiceProvider site) {
 		this.key = key;
+		this.site=site;
 	}
-
+	@Override
+	public IServiceProvider site() {
+		return site;
+	}
 	@Override
 	public String key() {
 		return key;

@@ -4,5 +4,5 @@ import cj.studio.ecm.ServiceCollection;
 
 public interface IServiceProvider {
 	<T> T getService(String name);
-	<T> ServiceCollection<T> getServices(T clazz);
+	<T> ServiceCollection<T> getServices(Class<T> clazz);
 }

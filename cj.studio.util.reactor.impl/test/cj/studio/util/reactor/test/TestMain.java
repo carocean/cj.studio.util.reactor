@@ -43,7 +43,7 @@ public class TestMain {
 		IReactor reactor = Reactor.open(DefaultReactor.class, 10, 1000, combin, new IServiceProvider() {
 			
 			@Override
-			public <T> ServiceCollection<T> getServices(T clazz) {
+			public <T> ServiceCollection<T> getServices(Class<T> clazz) {
 				return new ServiceCollection<>();
 			}
 			

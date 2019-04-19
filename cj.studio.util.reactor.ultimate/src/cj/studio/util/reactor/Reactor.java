@@ -34,7 +34,7 @@ public abstract class Reactor implements IReactor, IServiceProvider {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> ServiceCollection<T> getServices(T clazz) {
+	public <T> ServiceCollection<T> getServices(Class<T> clazz) {
 		synchronized (cached) {
 			if (cached.containsKey(clazz)) {
 				return (ServiceCollection<T>) cached.get(clazz);

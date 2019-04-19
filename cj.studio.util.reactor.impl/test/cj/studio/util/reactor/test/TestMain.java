@@ -1,10 +1,12 @@
 package cj.studio.util.reactor.test;
 
+import cj.studio.ecm.ServiceCollection;
 import cj.studio.util.reactor.DefaultReactor;
 import cj.studio.util.reactor.Event;
 import cj.studio.util.reactor.IPipeline;
 import cj.studio.util.reactor.IPipelineCombination;
 import cj.studio.util.reactor.IReactor;
+import cj.studio.util.reactor.IServiceProvider;
 import cj.studio.util.reactor.IValve;
 import cj.studio.util.reactor.Reactor;
 
@@ -27,9 +29,10 @@ public class TestMain {
 						case "cashout":
 							break;
 						}
+						ServiceCollection<Object> col=pipeline.site().getServices(Object.class);
 						pipeline.nextFlow(e, this);
 						System.out.println("----退出线程:" + pipeline.key() + " " + Thread.currentThread().getId() + " "
-								+ e.getCmd() + " " + this.hashCode());
+								+ e.getCmd() + " " + this.hashCode()+" "+col.hashCode());
 					}
 
 				};
@@ -37,7 +40,18 @@ public class TestMain {
 			}
 
 		};
-		IReactor reactor = Reactor.open(DefaultReactor.class, 10, 1000, combin, null);
+		IReactor reactor = Reactor.open(DefaultReactor.class, 10, 1000, combin, new IServiceProvider() {
+			
+			@Override
+			public <T> ServiceCollection<T> getServices(T clazz) {
+				return new ServiceCollection<>();
+			}
+			
+			@Override
+			public <T> T getService(String name) {
+				return (T)name;
+			}
+		});
 		try {
 			Thread.sleep(1000L);
 		} catch (InterruptedException e1) {

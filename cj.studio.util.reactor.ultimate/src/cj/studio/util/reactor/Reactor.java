@@ -3,11 +3,13 @@ package cj.studio.util.reactor;
 import java.util.HashMap;
 import java.util.Map;
 
+import cj.studio.ecm.ServiceCollection;
+
 public abstract class Reactor implements IReactor, IServiceProvider {
 
 	private boolean isOpened;
 	IServiceProvider parent;
-	Map<String, Object> cached;
+	Map<Object, Object> cached;
 
 	@Override
 	public boolean isOpened() {
@@ -17,14 +19,34 @@ public abstract class Reactor implements IReactor, IServiceProvider {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getService(String name) {
-		if (cached.containsKey(name)) {
-			return (T) cached.get(name);
+		synchronized (cached) {
+			if (cached.containsKey(name)) {
+				return (T) cached.get(name);
+			}
+			if (parent != null) {
+				T service = parent.getService(name);
+				cached.put(name, service);
+				return service;
+			}
 		}
-		if (parent != null) {
-			T service= parent.getService(name);
-			cached.put(name, service);
-			return service;
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> ServiceCollection<T> getServices(T clazz) {
+		synchronized (cached) {
+			if (cached.containsKey(clazz)) {
+				return (ServiceCollection<T>) cached.get(clazz);
+			}
+
+			if (parent != null) {
+				ServiceCollection<T> col = parent.getServices(clazz);
+				cached.put(clazz, col);
+				return col;
+			}
 		}
+
 		return null;
 	}
 
@@ -42,7 +64,7 @@ public abstract class Reactor implements IReactor, IServiceProvider {
 		Reactor reactor;
 		try {
 			reactor = (Reactor) reactorClazz.newInstance();
-			reactor.cached = new HashMap<String, Object>();
+			reactor.cached = new HashMap<>();
 			reactor.onopen(workTreadCount, capacity, combination);
 			reactor.isOpened = true;
 			reactor.parent = parent;
@@ -52,10 +74,12 @@ public abstract class Reactor implements IReactor, IServiceProvider {
 		}
 
 	}
+
 	public final static IReactor open(Class<? extends Reactor> reactorClazz, int workTreadCount, int capacity,
 			IPipelineCombination combination) {
 		return open(reactorClazz, workTreadCount, capacity, combination, null);
 	}
+
 	protected abstract void onopen(int workTreadCount, int capacity, IPipelineCombination combination);
 
 	@Override

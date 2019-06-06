@@ -1,6 +1,7 @@
 package cj.studio.util.reactor.test;
 
 import cj.studio.ecm.ServiceCollection;
+import cj.studio.ecm.net.CircuitException;
 import cj.studio.util.reactor.DefaultReactor;
 import cj.studio.util.reactor.Event;
 import cj.studio.util.reactor.IPipeline;
@@ -20,7 +21,7 @@ public class TestMain {
 				IValve valve = new IValve() {
 
 					@Override
-					public void flow(Event e, IPipeline pipeline) {
+					public void flow(Event e, IPipeline pipeline) throws CircuitException {
 						System.out.println("----进入线程:" + pipeline.key() + " " + Thread.currentThread().getId() + " "
 								+ e.getCmd() + " " + this.hashCode());
 						switch (e.getCmd()) {

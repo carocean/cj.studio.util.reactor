@@ -1,6 +1,8 @@
 package cj.studio.util.reactor;
 
- class DefaultPipeline implements IPipeline {
+import cj.studio.ecm.net.CircuitException;
+
+class DefaultPipeline implements IPipeline {
 	LinkEntry head;
 	String key;
 	private IServiceProvider site;
@@ -60,14 +62,14 @@ package cj.studio.util.reactor;
 	}
 
 	@Override
-	public void input(Event e) {
+	public void input(Event e) throws CircuitException{
 		if (head == null)
 			return;
 		nextFlow(e, null);
 	}
 
 	@Override
-	public void nextFlow(Event e, IValve formthis) {
+	public void nextFlow(Event e, IValve formthis)throws CircuitException {
 		if (head == null)
 			return;
 		if (formthis == null) {

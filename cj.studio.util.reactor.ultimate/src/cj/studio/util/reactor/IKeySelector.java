@@ -2,7 +2,7 @@ package cj.studio.util.reactor;
 
 public interface IKeySelector {
 
-	ISelectionKey select();
+	ISelectionKey select(String key);
 
 	int keyCount();
 

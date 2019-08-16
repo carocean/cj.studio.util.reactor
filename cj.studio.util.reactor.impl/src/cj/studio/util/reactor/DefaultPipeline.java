@@ -3,105 +3,142 @@ package cj.studio.util.reactor;
 import cj.studio.ecm.net.CircuitException;
 
 class DefaultPipeline implements IPipeline {
-	LinkEntry head;
-	String key;
-	private IServiceProvider site;
+    LinkEntry head;
+    String key;
+    private IServiceProvider site;
 
-	public DefaultPipeline(String key,IServiceProvider site) {
-		this.key = key;
-		this.site=site;
-	}
-	@Override
-	public IServiceProvider site() {
-		return site;
-	}
-	@Override
-	public String key() {
-		return key;
-	}
+    public DefaultPipeline(String key, IServiceProvider site) {
+        this.key = key;
+        this.site = site;
+    }
 
-	@Override
-	public void append(IValve valve) {
-		if (head == null) {
-			head = new LinkEntry(valve);
-			return;
-		}
-		LinkEntry entry = getEndConstomerEntry();
-		if (entry == null) {
-			return;
-		}
-		LinkEntry lastEntry = entry.next;
-		entry.next = new LinkEntry(valve);
-		entry.next.next = lastEntry;
-	}
+    @Override
+    public IServiceProvider site() {
+        return site;
+    }
 
-	private LinkEntry getEndConstomerEntry() {
-		if (head == null)
-			return null;
-		LinkEntry tmp = head;
-		do {
-			if (tmp.next == null)
-				return tmp;
-			tmp = tmp.next;
-		} while (tmp != null);
-		return null;
-	}
+    @Override
+    public String key() {
+        return key;
+    }
 
-	@Override
-	public void remove(IValve valve) {
-		if (head == null)
-			return;
-		LinkEntry tmp = head;
-		do {
-			if (valve.equals(tmp.next.entry)) {
-				break;
-			}
-			tmp = tmp.next;
-		} while (tmp.next != null);
-		tmp.next = tmp.next.next;
-	}
+//    public void dispose() {
+//        LinkEntry next = head;
+//        LinkEntry prev = null;
+//        while (next != null) {
+//
+//            prev = next;
+//            next = next.next;
+//            prev.next = null;
+//            prev.entry = null;
+//        }
+//        this.head = null;
+//    }
 
-	@Override
-	public void input(Event e) throws CircuitException{
-		if (head == null)
-			return;
-		nextFlow(e, null);
-	}
+    @Override
+    public void append(IValve valve) {
+        if (head == null) {
+            head = new LinkEntry(valve);
+            return;
+        }
+        LinkEntry entry = getEndConstomerEntry();
+        if (entry == null) {
+            return;
+        }
+        LinkEntry lastEntry = entry.next;
+        entry.next = new LinkEntry(valve);
+        entry.next.next = lastEntry;
+    }
 
-	@Override
-	public void nextFlow(Event e, IValve formthis)throws CircuitException {
-		if (head == null)
-			return;
-		if (formthis == null) {
-			head.entry.flow(e, this);
-			return;
-		}
-		LinkEntry linkEntry = lookforHead(formthis);
-		if (linkEntry == null || linkEntry.next == null)
-			return;
-		linkEntry.next.entry.flow(e, this);
-	}
+    private LinkEntry getEndConstomerEntry() {
+        if (head == null)
+            return null;
+        LinkEntry tmp = head;
+        do {
+            if (tmp.next == null)
+                return tmp;
+            tmp = tmp.next;
+        } while (tmp != null);
+        return null;
+    }
 
-	private LinkEntry lookforHead(IValve formthis) {
-		if (head == null)
-			return null;
-		LinkEntry tmp = head;
-		do {
-			if (formthis.equals(tmp.entry)) {
-				break;
-			}
-			tmp = tmp.next;
-		} while (tmp.next != null);
-		return tmp;
-	}
+    @Override
+    public void remove(IValve valve) {
+        if (head == null)
+            return;
+        LinkEntry tmp = head;
+        do {
+            if (valve.equals(tmp.next.entry)) {
+                break;
+            }
+            tmp = tmp.next;
+        } while (tmp.next != null);
+        tmp.next = tmp.next.next;
+    }
 
-	class LinkEntry {
-		LinkEntry next;
-		IValve entry;
+    @Override
+    public void nextError(Event e, Throwable error, IValve formthis) throws CircuitException {
+        if (head == null) {
+            return;
+        }
+        if (formthis == null) {
+            head.entry.nextError(e, error, this);
+            return;
+        }
+        LinkEntry linkEntry = lookforHead(formthis);
+        if (linkEntry == null || linkEntry.next == null)
+            return;
+        linkEntry.next.entry.nextError(e, error, this);
+    }
 
-		public LinkEntry(IValve entry) {
-			this.entry = entry;
-		}
+    @Override
+    public void error(Event event, Throwable e) throws CircuitException {
+        if (head == null)
+            return;
+        nextError(event, e, null);
+    }
 
-	}
+    @Override
+    public void input(Event e) throws CircuitException {
+        if (head == null)
+            return;
+        nextFlow(e, null);
+    }
+
+    @Override
+    public void nextFlow(Event e, IValve formthis) throws CircuitException {
+        if (head == null)
+            return;
+        if (formthis == null) {
+            head.entry.flow(e, this);
+            return;
+        }
+        LinkEntry linkEntry = lookforHead(formthis);
+        if (linkEntry == null || linkEntry.next == null)
+            return;
+        linkEntry.next.entry.flow(e, this);
+    }
+
+    private LinkEntry lookforHead(IValve formthis) {
+        if (head == null)
+            return null;
+        LinkEntry tmp = head;
+        do {
+            if (formthis.equals(tmp.entry)) {
+                break;
+            }
+            tmp = tmp.next;
+        } while (tmp.next != null);
+        return tmp;
+    }
+
+    class LinkEntry {
+        LinkEntry next;
+        IValve entry;
+
+        public LinkEntry(IValve entry) {
+            this.entry = entry;
+        }
+
+    }
 }

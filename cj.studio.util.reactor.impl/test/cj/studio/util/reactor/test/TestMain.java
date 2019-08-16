@@ -19,6 +19,10 @@ public class TestMain {
 			@Override
 			public void combine(IPipeline pipeline) {
 				IValve valve = new IValve() {
+					@Override
+					public void nextError(Event e,Throwable error,  IPipeline pipeline) throws CircuitException {
+						System.out.println("----出错:" + pipeline.key() + " "+ error);
+					}
 
 					@Override
 					public void flow(Event e, IPipeline pipeline) throws CircuitException {
@@ -34,6 +38,8 @@ public class TestMain {
 						pipeline.nextFlow(e, this);
 						System.out.println("----退出线程:" + pipeline.key() + " " + Thread.currentThread().getId() + " "
 								+ e.getCmd() + " " + this.hashCode()+" "+col.hashCode());
+//						throw new CircuitException("404","xxxxx");
+//						throw new RuntimeException("xxxxx");
 					}
 
 				};
@@ -63,7 +69,7 @@ public class TestMain {
 		for (int i = 0; i < keyCount; i++) {
 			keys[i] = "bank_" + i;
 		}
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 1000000; i++) {
 			Event e = new Event(keys[i % keyCount], "doMain_" + i);
 			reactor.input(e);
 		}

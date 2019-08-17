@@ -15,6 +15,13 @@ class KeySelector implements IKeySelector {
     }
 
     @Override
+    public void dispose() {
+        parent=null;
+        keys.clear();
+        combination=null;
+    }
+
+    @Override
     public int keyCount() {
         return keys.size();
     }
@@ -23,16 +30,17 @@ class KeySelector implements IKeySelector {
     public synchronized void removeKey(String key) {
         ISelectionKey k=keys.get(key);
         keys.remove(key);
+        combination.demolish(k.pipeline());
     }
 
     @Override
-    public synchronized ISelectionKey select(String key) {
+    public synchronized ISelectionKey select(String key,Object attachment) {
         try {
             ISelectionKey sk = keys.get(key);
             if (sk != null) {
                 return sk;
             }
-            IPipeline pipeline = new DefaultPipeline(key, parent);
+            IPipeline pipeline = new DefaultPipeline(key, parent,attachment);
             sk = new SelectionKey(key, pipeline);
             combination.combine(pipeline);
             keys.put(key, sk);

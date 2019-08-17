@@ -37,6 +37,10 @@ public class Event {
 		return mustCancelKey;
 	}
 
+	public void setMustCancelKey(boolean mustCancelKey) {
+		this.mustCancelKey = mustCancelKey;
+	}
+
 	public String getKey() {
 		return key;
 	}

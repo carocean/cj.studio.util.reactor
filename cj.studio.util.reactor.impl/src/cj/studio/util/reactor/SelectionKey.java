@@ -22,5 +22,8 @@ class SelectionKey implements ISelectionKey {
         return key;
     }
 
-
+    @Override
+    public Object attachment() {
+        return pipeline.attachment();
+    }
 }

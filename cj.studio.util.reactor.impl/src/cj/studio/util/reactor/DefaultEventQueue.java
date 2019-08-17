@@ -43,4 +43,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 		}
 	}
 
-}
+	 @Override
+	 public int count() {
+		 return queue.size();
+	 }
+ }

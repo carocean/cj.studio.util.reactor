@@ -1,6 +1,6 @@
 package cj.studio.util.reactor;
 
-public interface IReactor {
+public interface IReactor extends IServiceProvider{
 
 	void input(Event e);
 
@@ -14,4 +14,5 @@ public interface IReactor {
 	void removeKey(String key);
 	
 	int pipelineCount();
+	int queueCount();
 }

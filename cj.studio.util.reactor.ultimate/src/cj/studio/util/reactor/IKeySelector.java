@@ -1,8 +1,10 @@
 package cj.studio.util.reactor;
 
-public interface IKeySelector {
+import cj.ultimate.IDisposable;
 
-	ISelectionKey select(String key);
+public interface IKeySelector extends IDisposable {
+
+	ISelectionKey select(String key,Object attachment);
 
 	int keyCount();
 

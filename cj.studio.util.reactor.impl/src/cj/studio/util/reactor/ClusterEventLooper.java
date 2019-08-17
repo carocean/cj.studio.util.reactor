@@ -3,27 +3,27 @@ package cj.studio.util.reactor;
 import cj.studio.ecm.CJSystem;
 import cj.studio.ecm.net.CircuitException;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-class EventLooper implements IEventLooper {
+class ClusterEventLooper implements IEventLooper {
     IKeySelector selector;
     IEventQueue queue;
+    IRemoteServiceNodeRouter remoteServiceNodeRouter;
 
-    public EventLooper(IKeySelector selector, IEventQueue queue) {
+    public ClusterEventLooper(IKeySelector selector, IEventQueue queue, IRemoteServiceNodeRouter remoteServiceNodeRouter) {
         this.selector = selector;
         this.queue = queue;
+        this.remoteServiceNodeRouter = remoteServiceNodeRouter;
     }
 
     @Override
     public Event call() throws Exception {
         while (!Thread.interrupted()) {
             Event event = queue.selectOne();
-            ISelectionKey key = selector.select(event.getKey(),event);
+            RemoteServiceNode node = remoteServiceNodeRouter.routeNode(event.getKey());
+            ISelectionKey key = selector.select(node.getKey(), node);//按远程节点负载
             synchronized (key.key()) {// 让同一个管道的事件按序执行
                 try {
                     key.pipeline().input(event);
-                    if (event.isMustCancelKey()) {
+                    if (key.pipeline().isDemandDemolish() || event.isMustCancelKey()) {
                         selector.removeKey(key.key());
                     }
                 } catch (Throwable e) {
@@ -37,7 +37,7 @@ class EventLooper implements IEventLooper {
                     } catch (Throwable e2) {
                         CJSystem.logging().error(getClass(), e2);
                     } finally {
-                        if (event.isMustCancelKey()) {
+                        if (key.pipeline().isDemandDemolish() || event.isMustCancelKey()) {
                             selector.removeKey(key.key());
                         }
                     }
@@ -48,6 +48,4 @@ class EventLooper implements IEventLooper {
 
         return null;
     }
-
-
 }

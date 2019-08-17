@@ -51,7 +51,7 @@ public abstract class Reactor implements IReactor, IServiceProvider {
 	}
 
 	@Override
-	public final void input(Event e) {
+	public  void input(Event e) {
 		if (!isOpened)
 			return;
 		getQueue().addEvent(e);
@@ -89,6 +89,12 @@ public abstract class Reactor implements IReactor, IServiceProvider {
 		onclose();
 		cached.clear();
 		isOpened = false;
+	}
+
+	@Override
+	public final int queueCount() {
+		IEventQueue queue=getQueue();
+		return queue==null?0:queue.count();
 	}
 
 	protected abstract void onclose();

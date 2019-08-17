@@ -3,10 +3,10 @@ package cj.studio.util.reactor;
 import cj.ultimate.IDisposable;
 
 public interface ISelectionKey {
-	IPipeline pipeline();
+    IPipeline pipeline();
 
-	String key();
+    String key();
 
 
-
+    Object attachment();
 }

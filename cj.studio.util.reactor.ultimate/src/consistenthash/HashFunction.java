@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cj.studio.util.reactor.consistenthash;
+package consistenthash;
 
 /**
  * @author linjunjie1103@gmail.com

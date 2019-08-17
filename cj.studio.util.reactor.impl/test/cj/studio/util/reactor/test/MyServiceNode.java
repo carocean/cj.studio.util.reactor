@@ -16,8 +16,8 @@
  */
 package cj.studio.util.reactor.test;
 
-import cj.studio.util.reactor.consistenthash.ConsistentHashRouter;
-import cj.studio.util.reactor.consistenthash.Node;
+import consistenthash.ConsistentHashRouter;
+import consistenthash.Node;
 
 import java.util.Arrays;
 
@@ -54,7 +54,7 @@ import java.util.Arrays;
         MyServiceNode node4 = new MyServiceNode("IDC1","127.0.0.1",8084);
 
         //hash them to hash ring
-        ConsistentHashRouter<MyServiceNode> consistentHashRouter = new ConsistentHashRouter<>(Arrays.asList(node1,node2,node3,node4),10);//10 virtual node
+        ConsistentHashRouter<MyServiceNode> consistentHashRouter = new ConsistentHashRouter<>(Arrays.asList(node1,node2,node3,node4),10);//10 virtual node，虚拟节点是物理节点的副本，每个物理节点均可以有0-n个副本，正是以副本进行均衡的而不是以物理节点，因此此值为0表示无节点，为1表示每个物理节点有一个副本进行均衡
 
         //we have 5 requester ip, we are trying them to route to one service node
         String requestIP1 = "192.168.0.1";
@@ -62,7 +62,6 @@ import java.util.Arrays;
         String requestIP3 = "192.168.0.3";
         String requestIP4 = "192.168.0.4";
         String requestIP5 = "192.168.0.5";
-
         goRoute(consistentHashRouter,requestIP1,requestIP2,requestIP3,requestIP4,requestIP5);
 
         MyServiceNode node5 = new MyServiceNode("IDC2","127.0.0.1",8080);//put new service online

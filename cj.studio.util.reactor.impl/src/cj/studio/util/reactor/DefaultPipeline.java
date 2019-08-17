@@ -6,15 +6,27 @@ class DefaultPipeline implements IPipeline {
     LinkEntry head;
     String key;
     private IServiceProvider site;
-
-    public DefaultPipeline(String key, IServiceProvider site) {
+    Object attachment;
+    boolean isDemandDemolish;
+    public DefaultPipeline(String key, IServiceProvider site, Object attachment) {
         this.key = key;
         this.site = site;
+        this.attachment = attachment;
     }
 
     @Override
     public IServiceProvider site() {
         return site;
+    }
+
+    @Override
+    public boolean isDemandDemolish() {
+        return isDemandDemolish;
+    }
+
+    @Override
+    public void setDemandDemolish(boolean isDemandDemolish) {
+        this.isDemandDemolish=isDemandDemolish;
     }
 
     @Override
@@ -117,6 +129,11 @@ class DefaultPipeline implements IPipeline {
         if (linkEntry == null || linkEntry.next == null)
             return;
         linkEntry.next.entry.flow(e, this);
+    }
+
+    @Override
+    public Object attachment() {
+        return attachment;
     }
 
     private LinkEntry lookforHead(IValve formthis) {

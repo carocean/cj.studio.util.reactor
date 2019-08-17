@@ -3,7 +3,10 @@ package cj.studio.util.reactor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class DefaultReactor extends Reactor {
+/**
+ * 多路复用响应器，该响应器一般用于处理具体业务逻辑
+ */
+public final class DefaultReactor extends Reactor {
 	private IEventQueue queue;
 	private ExecutorService exe;
 	IKeySelector selector;

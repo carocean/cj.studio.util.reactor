@@ -11,6 +11,12 @@ public interface IPipeline {
      * @return
      */
     Object attachment();
+
+    /**
+     * 设置附件
+     * @param attachment
+     */
+    void attachment(Object attachment);
     void append(IValve valve);
 
     void input(Event e) throws CircuitException;

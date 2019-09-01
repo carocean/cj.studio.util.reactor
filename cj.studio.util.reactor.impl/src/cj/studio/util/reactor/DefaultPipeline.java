@@ -136,6 +136,11 @@ class DefaultPipeline implements IPipeline {
         return attachment;
     }
 
+    @Override
+    public void attachment(Object attachment) {
+        this.attachment=attachment;
+    }
+
     private LinkEntry lookforHead(IValve formthis) {
         if (head == null)
             return null;

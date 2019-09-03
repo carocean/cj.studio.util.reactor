@@ -3,7 +3,10 @@ package cj.studio.util.reactor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class DefaultReactor extends Reactor {
+/**
+ * 多路复用响应器，该响应器一般用于处理具体业务逻辑
+ */
+public final class DefaultReactor extends Reactor {
 	private IEventQueue queue;
 	private ExecutorService exe;
 	IKeySelector selector;
@@ -17,9 +20,9 @@ public class DefaultReactor extends Reactor {
 	protected void onopen(int workTreadCount, int capacity, IPipelineCombination assembly) {
 		this.queue = new DefaultEventQueue(capacity);
 		this.exe = Executors.newFixedThreadPool(workTreadCount);
-		selector = new KeySelector(queue, assembly,this);
+		selector = new KeySelector(assembly,this);
 		for (int i = 0; i < workTreadCount; i++) {
-			IEventLooper looper = new EventLooper(selector);
+			IEventLooper looper = new EventLooper(selector,queue);
 			exe.submit(looper);
 		}
 	}

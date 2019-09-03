@@ -22,10 +22,10 @@
   </developers>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.2</version>
-      <scope>test</scope>
+      <groupId>cj.studio.ecm</groupId>
+      <artifactId>cj.ultimate</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>cj.studio.ecm</groupId>
@@ -46,10 +46,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>cj.studio.ecm</groupId>
-      <artifactId>cj.ultimate</artifactId>
-      <version>1.0.0</version>
-      <scope>compile</scope>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

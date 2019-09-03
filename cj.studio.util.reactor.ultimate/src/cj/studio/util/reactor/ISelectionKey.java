@@ -1,15 +1,12 @@
 package cj.studio.util.reactor;
 
+import cj.ultimate.IDisposable;
+
 public interface ISelectionKey {
+    IPipeline pipeline();
 
-	IPipeline pipeline();
-
-	String key();
+    String key();
 
 
-	void addEvent(Event e);
-	Event event();
-	boolean isEventEmpty();
-	int eventCount();
-
+    Object attachment();
 }

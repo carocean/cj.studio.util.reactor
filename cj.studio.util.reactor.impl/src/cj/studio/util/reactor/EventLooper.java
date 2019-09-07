@@ -19,7 +19,13 @@ class EventLooper implements IEventLooper {
     public Event call() throws Exception {
         while (!Thread.interrupted()) {
             Event event = queue.selectOne();
-            ISelectionKey key = selector.select(event.getKey(),event);
+            ISelectionKey key = null;
+            try{
+                key = selector.select(event.getKey(),event);
+            }catch (Throwable e){
+                CJSystem.logging().warn(getClass(),e.getMessage());
+                continue;
+            }
             synchronized (key.key()) {// 让同一个管道的事件按序执行
                 try {
                     key.pipeline().input(event);

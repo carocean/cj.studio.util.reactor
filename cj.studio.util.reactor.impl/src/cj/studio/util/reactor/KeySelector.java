@@ -18,10 +18,10 @@ class KeySelector implements IKeySelector, IServiceProvider {
 
     @Override
     public <T> T getService(String name) {
-        int pos=name.indexOf("$.key.");
-        if(pos==0){
-            String key=name.substring("$.key.".length(),name.length());
-            return (T)keys.get(key);
+        int pos = name.indexOf("$.key.");
+        if (pos == 0) {
+            String key = name.substring("$.key.".length(), name.length());
+            return (T) keys.get(key);
         }
         if (parent != null) {
             return parent.getService(name);
@@ -57,22 +57,16 @@ class KeySelector implements IKeySelector, IServiceProvider {
     }
 
     @Override
-    public synchronized ISelectionKey select(String key, Object attachment) {
-        try {
-            ISelectionKey sk = keys.get(key);
-            if (sk != null) {
-                return sk;
-            }
-            IPipeline pipeline = new DefaultPipeline(key, this, attachment);
-            sk = new SelectionKey(key, pipeline);
-            combination.combine(pipeline);
-            keys.put(key, sk);
+    public synchronized ISelectionKey select(String key, Object attachment) throws CombineException {
+        ISelectionKey sk = keys.get(key);
+        if (sk != null) {
             return sk;
-        } catch (Exception e1) {
-            throw new RuntimeException(e1);
-        } finally {
         }
-
+        IPipeline pipeline = new DefaultPipeline(key, this, attachment);
+        sk = new SelectionKey(key, pipeline);
+        combination.combine(pipeline);
+        keys.put(key, sk);
+        return sk;
     }
 
 }

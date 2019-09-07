@@ -4,7 +4,7 @@ import cj.ultimate.IDisposable;
 
 public interface IKeySelector extends IDisposable {
 
-	ISelectionKey select(String key,Object attachment);
+	ISelectionKey select(String key,Object attachment) throws CombineException;
 
 	int keyCount();
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="cj.studio.util.reactor" module="cj.studio.util.reactor.ultimate" revision="1.0.0" status="integration" publication="20190901221716"/>
+  <info organisation="cj.studio.util.reactor" module="cj.studio.util.reactor.ultimate" revision="1.0.0" status="integration" publication="20190907142548"/>
   <configurations>
     <conf name="annotationProcessor" visibility="private"/>
     <conf name="apiElements" visibility="private" extends="runtime"/>

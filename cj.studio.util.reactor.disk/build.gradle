@@ -1,0 +1,36 @@
+group 'cj.studio.util.reactor'
+sourceSets {
+    main {
+        java{
+            srcDir "$projectDir/src"
+            srcDir "$projectDir/test"
+        }
+        resources{
+            srcDir "$projectDir/site-src"
+        }
+    }
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+repositories {
+    flatDir(dirs: "../global/lib")
+}
+
+dependencies {
+    compile project(':cj.studio.util.reactor.ultimate');
+    compile fileTree('../global/runtime')
+    //compile fileTree('src/cj/references')
+
+}
+task releaseToOutputs(type: Copy) {
+    dependsOn "build"
+    from 'build/libs/'
+    into '../outputs'
+    include '**/*.jar'
+}
+task release(type:Copy){
+    dependsOn "releaseToOutputs"
+}

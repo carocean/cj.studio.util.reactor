@@ -1,2 +1,5 @@
+rootProject.name = 'cj.studio.util.reactor'
 include "cj.studio.util.reactor.ultimate"
 include "cj.studio.util.reactor.impl"
+include 'cj.studio.util.reactor.disk'
+

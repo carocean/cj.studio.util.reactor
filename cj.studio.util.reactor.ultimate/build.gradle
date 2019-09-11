@@ -1,4 +1,5 @@
-sourceSets { 
+group 'cj.studio.util.reactor'
+sourceSets {
 	 main { 
 	 	java{
 	 		srcDir "$projectDir/src"

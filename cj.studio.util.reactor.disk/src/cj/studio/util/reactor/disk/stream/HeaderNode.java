@@ -16,15 +16,28 @@ public class HeaderNode extends Node {
 
     public HeaderNode(Pointer top) {
         super(top);
+        readerPointer = new Pointer(getNodeSize());
+        writerPointer = new Pointer(getNodeSize());
     }
 
     @Override
     protected int getNodeSize() {
-        return super.getNodeSize()+readerPointer.pointerSize()+writerPointer.pointerSize();
+        return super.getNodeSize() + 8 + 8;
+    }
+
+    public void flushReaderPointer(RandomAccessFile file) throws IOException {
+        byte[] rp = readerPointer.toBytes();
+        file.seek(top.getPosition() + 1);
+        file.write(rp, 0, rp.length);
+    }
+    public void flushWriterPointer(RandomAccessFile file) throws IOException {
+        byte[] wp = writerPointer.toBytes();
+        file.seek(top.getPosition() + 1 + 8);
+        file.write(wp, 0, wp.length);
     }
 
     @Override
-    public void save(RandomAccessFile file) throws IOException {
+    public Pointer save(RandomAccessFile file) throws IOException {
         byte[] rp = readerPointer.toBytes();
         byte[] wp = writerPointer.toBytes();
         byte[] dest = new byte[getNodeSize()];
@@ -33,24 +46,33 @@ public class HeaderNode extends Node {
         System.arraycopy(wp, 0, dest, 1 + rp.length, wp.length);
         file.seek(0);
         file.write(dest, 0, dest.length);
+        return top.plus(getNodeSize());
     }
 
     @Override
-    public void load(RandomAccessFile file) throws IOException {
+    public Pointer load(RandomAccessFile file) throws IOException {
         if (file.length() == 0) {
-            this.readerPointer=new Pointer(0);
-            this.writerPointer=new Pointer(0);
-            return;
+            init(file);
         }
+        file.seek(top.getPosition());
         byte[] dest = new byte[getNodeSize()];
-        FileReader.readfully(file,dest);
-        header=dest[0];
-        byte[] rp=new byte[8];
-        byte[] wp=new byte[8];
-        System.arraycopy(dest,1,rp,0,rp.length);
-        System.arraycopy(dest,1+rp.length,wp,0,wp.length);
+        FileReader.readfully(file, dest);
+        header = dest[0];
+        byte[] rp = new byte[8];
+        byte[] wp = new byte[8];
+        System.arraycopy(dest, 1, rp, 0, rp.length);
+        System.arraycopy(dest, 1 + rp.length, wp, 0, wp.length);
         readerPointer.loadBytes(rp);
         writerPointer.loadBytes(wp);
+        return null;
+    }
+
+    private void init(RandomAccessFile file) throws IOException {
+        this.readerPointer = new Pointer(getNodeSize());
+        this.writerPointer = new Pointer(getNodeSize());
+        file.setLength(getNodeSize() + new MiddleNode(null).getNodeSize() * 1024L);
+        file.seek(0);
+        save(file);
     }
 
     public Pointer getWriterPointer() {
@@ -69,11 +91,5 @@ public class HeaderNode extends Node {
         this.writerPointer = writerPointer;
     }
 
-    public void flushWriterPointer() {
 
-    }
-
-    public void flushReaderPointer() {
-
-    }
 }

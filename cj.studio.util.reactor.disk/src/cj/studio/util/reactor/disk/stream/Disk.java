@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /*
 设计原理：
@@ -21,27 +23,24 @@ import java.util.Map;
 - 数据结构为三类节点和数据块构成，三类节点分别是头节点、中间节点、数据节点
  */
 public class Disk {
-
+    ReentrantLock lock;
+    Condition readToWPointerCondition;
     long dataFileLength;
     RandomAccessFile mainIndexFile;
     Map<Long, RandomAccessFile> dataIndexFiles;
     HeaderNode header;
     String homeDir;
     public Disk(String dir, long dataFileLength) throws IOException {
-        this.homeDir=dir;
-        dataIndexFiles = new HashMap<>();
         File f = new File(dir);
         if (!f.exists()) {
             f.mkdirs();
         }
-        if (!f.isDirectory()) {
-            throw new IOException("不是目录");
+        dataIndexFiles = new HashMap<>();
+        this.homeDir=f.getPath();
+        if (!this.homeDir.endsWith("/")) {
+            this.homeDir = this.homeDir + "/";
         }
-
-        if (!dir.endsWith("/")) {
-            dir = dir + "/";
-        }
-        File ifile = new File(String.format("%sa.m", dir));
+        File ifile = new File(String.format("%sa.m", this.homeDir));
 
         if (!ifile.exists()) {
             ifile.createNewFile();
@@ -49,6 +48,8 @@ public class Disk {
         this.dataFileLength = dataFileLength;
         this.header = new HeaderNode(new Pointer(0));
         this.mainIndexFile = new RandomAccessFile(ifile, "rw");
+        this.lock=new ReentrantLock();
+        this.readToWPointerCondition=lock.newCondition();
         header.load(mainIndexFile);
     }
 
@@ -59,7 +60,15 @@ public class Disk {
         MiddleNode middleNode = new MiddleNode(readerPointer);
         middleNode.load(mainIndexFile);
         if (middleNode.isReadToWritePointer()) {//如果读到写指针则到尾，返回null
-            return null;
+            try {
+                lock.lock();
+                this.readToWPointerCondition.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }finally {
+                lock.unlock();
+            }
+//            return null;
         }
 
         long num = middleNode.getNumber(header.getNodeSize());
@@ -85,8 +94,8 @@ public class Disk {
     }
 
     public void write(byte[] data) throws IOException {
-        if (data.length + 5 > dataFileLength) {
-            throw new IOException(String.format("数据大小超过数据文件大小,dataLength+5>dataFileLength: %s>%s", data.length, dataFileLength));
+        if (data.length + 5 > dataFileLength) {//5是数据节点的头头大小
+            throw new IOException(String.format("数据大小超过数据文件大小,dataLength+5>dataFileLength: %s>%s", data.length+5, dataFileLength));
         }
         Pointer writerPointer = header.writerPointer;
         MiddleNode middleNode = new MiddleNode(writerPointer);
@@ -118,6 +127,12 @@ public class Disk {
         Pointer wpointer = dataNode.save(dfile);
         middleNode.setWriterPointer(wpointer);
         middleNode.flushWriterPointer(mainIndexFile);
+        try{
+            lock.lock();
+            readToWPointerCondition.signal();
+        }finally {
+            lock.unlock();
+        }
     }
 
     //从头到主索引文件尾扫描
@@ -131,7 +146,7 @@ public class Disk {
     }
 
     private RandomAccessFile openOrCreateDataFile(long num) throws IOException {
-        String fn = String.format("/Users/cj/studio/cj.studio.util.reactor/data/%s.d", num);
+        String fn = String.format("%s%s.d",homeDir, num);
         File f = new File(fn);
         if (!f.exists()) {
             f.createNewFile();
@@ -141,13 +156,5 @@ public class Disk {
     }
 
 
-    public void empty() {
-        File dir = new File(homeDir);
-        if (!dir.exists()) return;
 
-        for (File f : dir.listFiles()) {
-            f.delete();
-        }
-        dir.delete();
-    }
 }

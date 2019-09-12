@@ -10,9 +10,15 @@ public abstract class Node {
     public Node(Pointer top) {
         this.top = top;
     }
-    protected  int getNodeSize(){
+
+    public Pointer getTop() {
+        return top;
+    }
+
+    protected int getNodeSize() {
         return 1;
     }
+
     public final byte getHeader() {
         return header;
     }
@@ -21,11 +27,9 @@ public abstract class Node {
         this.header = header;
     }
 
-    public abstract void load(RandomAccessFile file) throws IOException;
+    public abstract Pointer load(RandomAccessFile file) throws IOException;
 
-    public abstract void save(RandomAccessFile file) throws IOException;
-
-
+    public abstract Pointer save(RandomAccessFile file) throws IOException;
 
 
 }

@@ -29,12 +29,12 @@ public class Pointer {
     }
 
     public int compareTo(long l) {
-        return 0;
+        if(position==l)return 0;
+        return position>l?1:-1;
     }
 
     public int compareTo(Pointer pointer) {
-        if (position == pointer.position) return 0;
-        return (position > pointer.position) ? 1 : -1;
+        return compareTo(pointer.position);
     }
     public long plusOffset(long offset){
         return position+offset;

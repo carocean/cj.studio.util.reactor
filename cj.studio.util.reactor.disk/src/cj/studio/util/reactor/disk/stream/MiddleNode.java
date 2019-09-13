@@ -119,6 +119,7 @@ public class MiddleNode extends Node {
     }
 
     public void reset() {
+        this.header=0;
         this.readerPointer=new Pointer(0);
         this.writerPointer=new Pointer(0);
         this.nextPointer=new Pointer(0);

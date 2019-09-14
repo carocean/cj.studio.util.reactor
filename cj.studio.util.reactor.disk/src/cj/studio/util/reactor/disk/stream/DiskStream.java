@@ -1,8 +1,6 @@
 package cj.studio.util.reactor.disk.stream;
 
 
-import cj.studio.util.reactor.disk.stream.lock.INodeLockerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -31,7 +29,6 @@ public class DiskStream {
     Map<Long, RandomAccessFile> dataIndexFiles;
     HeaderNode header;
     String homeDir;
-    INodeLockerFactory factory;
 
     public DiskStream(String dir, long dataFileLength) throws IOException {
         File f = new File(dir);
@@ -142,5 +139,12 @@ public class DiskStream {
         return file;
     }
 
+    public void close() throws IOException {
+        this.mainIndexFile.close();
+        for(RandomAccessFile file:this.dataIndexFiles.values()){
+            file.close();
+        }
+        this.header=null;
+    }
 
 }

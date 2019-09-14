@@ -59,15 +59,26 @@ public abstract class Reactor implements IReactor, IServiceProvider {
 
 	protected abstract IEventQueue getQueue();
 
+	/**
+	 *
+	 * @param reactorClazz 支持：DefaultRactor,DefaultClusterRactor
+	 * @param workTreadCount
+	 * @param capacity
+	 * @param combination
+	 * @param parent key说明：
+	 *               - 替换queue请覆盖key：$.reactor.queue，类型:IEventQueue
+	 *               - 如果使用了DefaultClusterRactor可以选用定向器。key:$.reactor.orientor,类型：DefaultOrientor
+	 * @return
+	 */
 	public final static IReactor open(Class<? extends Reactor> reactorClazz, int workTreadCount, int capacity,
 			IPipelineCombination combination, IServiceProvider parent) {
 		Reactor reactor;
 		try {
 			reactor = (Reactor) reactorClazz.newInstance();
 			reactor.cached = new HashMap<>();
+			reactor.parent = parent;
 			reactor.onopen(workTreadCount, capacity, combination);
 			reactor.isOpened = true;
-			reactor.parent = parent;
 			return reactor;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);

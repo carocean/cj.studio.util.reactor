@@ -6,12 +6,12 @@ import cj.studio.util.reactor.*;
 
 public class TestMain {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         testDefault();
 //  testCluster();
     }
 
-    private static void testDefault() {
+    private static void testDefault() throws InterruptedException {
         IPipelineCombination combin = new IPipelineCombination() {
 
             @Override
@@ -50,7 +50,7 @@ public class TestMain {
                 System.out.println(String.format("管道拆除：%s ", pipeline.key()));
             }
         };
-        IReactor reactor = Reactor.open(DefaultReactor.class, 10, 1000, combin, new IServiceProvider() {
+        IReactor reactor = Reactor.open(DefaultReactor.class, 10, 2*1024*1024, combin, new IServiceProvider() {
 
             @Override
             public <T> ServiceCollection<T> getServices(Class<T> clazz) {
@@ -59,6 +59,9 @@ public class TestMain {
 
             @Override
             public <T> T getService(String name) {
+                if("$.reactor.queue".equals(name)){
+                    return (T) new DiskStreamEventQueue("/Users/cj/studio/cj.studio.util.reactor/cj.studio.util.reactor.impl/data/");
+                }
                 return (T) name;
             }
         });
@@ -72,9 +75,10 @@ public class TestMain {
         for (int i = 0; i < keyCount; i++) {
             keys[i] = "bank_" + i;
         }
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 20000000; i++) {
             Event e = new Event(keys[i % keyCount], "doMain_" + i);
             reactor.input(e);
+            Thread.sleep(10);
         }
 //		reactor.removeKey(keys[0]);
         System.out.println("-----完");
@@ -112,7 +116,24 @@ public class TestMain {
                 System.out.println(String.format("管道拆除，请断开连接：%s %s", node.getKey(), node.getHost()));
             }
         };
-        IReactor reactor = Reactor.open(DefaultClusterRactor.class, 10, 1000, combin);
+        IReactor reactor = Reactor.open(DefaultClusterRactor.class, 10, 2*1024*1024, combin,new IServiceProvider() {
+
+            @Override
+            public <T> ServiceCollection<T> getServices(Class<T> clazz) {
+                return new ServiceCollection<>();
+            }
+
+            @Override
+            public <T> T getService(String name) {
+                if("$.reactor.queue".equals(name)){//使用磁盘流队列
+                    return (T) new DiskStreamEventQueue("/Users/cj/studio/cj.studio.util.reactor/cj.studio.util.reactor.impl/data/");
+                }
+                if("$.reactor.orientor".equals(name)){//使用定向器，以记忆路由
+                    return (T) new DefaultOrientor("/Users/cj/studio/cj.studio.util.reactor/cj.studio.util.reactor.impl/data/orientor.db");
+                }
+                return (T) name;
+            }
+        });
 
         IRemoteServiceNodeRouter manager = reactor.getService("$.remote.nodes.router");
         manager.init(12);

@@ -5,12 +5,12 @@ import cj.studio.ecm.ServiceCollection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-class KeySelector implements IKeySelector, IServiceProvider {
+class DefaultKeySelector implements IKeySelector, IServiceProvider {
     Map<String, ISelectionKey> keys;
     private IPipelineCombination combination;
     IServiceProvider parent;
 
-    public KeySelector(IPipelineCombination combination, IServiceProvider parent) {
+    public DefaultKeySelector(IPipelineCombination combination, IServiceProvider parent) {
         keys = new ConcurrentHashMap<String, ISelectionKey>();
         this.combination = combination;
         this.parent = parent;
@@ -62,11 +62,27 @@ class KeySelector implements IKeySelector, IServiceProvider {
         if (sk != null) {
             return sk;
         }
+        Object attachment2 = assignAttachmentFor(key);
+        if(attachment2!=null){
+            attachment=attachment2;//覆盖方法传入的附件，而采用系统分配的附件
+        }
         IPipeline pipeline = new DefaultPipeline(key, this, attachment);
         sk = new SelectionKey(key, pipeline);
         combination.combine(pipeline);
         keys.put(key, sk);
         return sk;
+    }
+
+    /**
+     * 在新的pipeline创建之前，派生类可为该pipleline的key绑定附件<br>
+     *
+     *
+     * @param key
+     * @return
+     */
+    protected Object assignAttachmentFor(String key) {
+
+        return null;
     }
 
 }

@@ -18,7 +18,7 @@ public class TestDisk {
         lock=new ReentrantLock();
         readToWPointerCondition=lock.newCondition();
         diskDir = "/Users/cj/studio/cj.studio.util.reactor/cj.studio.util.reactor.disk/data";
-        empty();
+//        empty();
         long dataFileLength = 2 * 1024 * 1024;
         try {
             disk = new DiskStream(diskDir, dataFileLength);
@@ -29,7 +29,10 @@ public class TestDisk {
 
     public static void main(String... args) throws IOException, InterruptedException {
 //        testWrite();
+//        disk.close();
+//        System.out.println("完");
 //        testRead();
+//        System.out.println("完");
         //多线程有冲突，必须对节点上锁
         for(int i=0;i<100;i++) {
             new Thread(new Runnable() {

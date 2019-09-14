@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 /**
  * 负载均衡响应器
  */
-public final class DefaultClusterRactor extends Reactor {
+public class DefaultClusterRactor extends Reactor {
 
 
     IEventQueue queue;
@@ -17,7 +17,7 @@ public final class DefaultClusterRactor extends Reactor {
     IRemoteServiceNodeRouter remoteServiceNodeRouter;
 
     @Override
-    protected IEventQueue getQueue() {
+    protected final IEventQueue getQueue() {
         return queue;
     }
 
@@ -32,14 +32,20 @@ public final class DefaultClusterRactor extends Reactor {
     @Override
     protected void onopen(int workTreadCount, int capacity, IPipelineCombination combination) {
         remoteServiceNodeRouter = new DefaultRemoteServiceNodeRouter();
-        this.queue = new DefaultEventQueue(capacity);
+        this.queue = parent.getService("$.reactor.queue");
+        if (this.queue == null) {
+            this.queue = new DefaultEventQueue();
+        }
+        this.queue.init(capacity);
         this.exe = Executors.newFixedThreadPool(workTreadCount);
-        selector = new KeySelector(combination, this);
+        IOrientor orientor = parent.getService("$.reactor.orientor");
+        selector = new ClusterKeySelector(remoteServiceNodeRouter,orientor,combination, this);
         for (int i = 0; i < workTreadCount; i++) {
-            IEventLooper looper = new ClusterEventLooper(selector, queue,remoteServiceNodeRouter);
+            IEventLooper looper = new EventLooper(selector, queue);
             exe.submit(looper);
         }
     }
+
 
     @Override
     public void input(Event e) {
@@ -53,6 +59,7 @@ public final class DefaultClusterRactor extends Reactor {
     protected void onclose() {
         exe.shutdownNow();
         exe = null;
+        queue.dispose();
         queue = null;
         selector.dispose();
         selector = null;

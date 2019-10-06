@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cj.studio.util.reactor</groupId>
   <artifactId>cj.studio.util.reactor.ultimate</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.5</version>
   <name>cj.studio.util.reactor.ultimate</name>
   <description></description>
   <licenses>
@@ -24,25 +24,25 @@
     <dependency>
       <groupId>cj.studio.ecm</groupId>
       <artifactId>cj.ultimate</artifactId>
-      <version>1.0.0</version>
+      <version>2.3.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>cj.studio.ecm</groupId>
       <artifactId>cj.studio.ecm.corelib</artifactId>
-      <version>1.0.0</version>
+      <version>2.3.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>cj.studio.gateway2</groupId>
       <artifactId>cj.studio.ecm.net</artifactId>
-      <version>1.0.0</version>
+      <version>2.3.7</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>cj.studio.gateway2</groupId>
       <artifactId>cj.studio.gateway.socket</artifactId>
-      <version>1.0.0</version>
+      <version>2.3.7</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

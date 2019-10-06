@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="cj.studio.util.reactor" module="cj.studio.util.reactor.ultimate" revision="1.0.0" status="integration" publication="20190914172210"/>
+  <info organisation="cj.studio.util.reactor" module="cj.studio.util.reactor.ultimate" revision="1.0.5" status="integration" publication="20191006211343"/>
   <configurations>
     <conf name="annotationProcessor" visibility="private"/>
     <conf name="apiElements" visibility="private" extends="runtime"/>
@@ -29,10 +29,10 @@
     <artifact name="cj.studio.util.reactor.ultimate" type="jar" ext="jar" conf="archives" m:classifier="sources"/>
   </publications>
   <dependencies>
-    <dependency org="cj.studio.ecm" name="cj.ultimate" rev="1.0.0" conf="compile-&gt;default"/>
-    <dependency org="cj.studio.ecm" name="cj.studio.ecm.corelib" rev="1.0.0" conf="compile-&gt;default"/>
-    <dependency org="cj.studio.gateway2" name="cj.studio.ecm.net" rev="1.0.0" conf="compile-&gt;default"/>
-    <dependency org="cj.studio.gateway2" name="cj.studio.gateway.socket" rev="1.0.0" conf="compile-&gt;default"/>
+    <dependency org="cj.studio.ecm" name="cj.ultimate" rev="2.3.6" conf="compile-&gt;default"/>
+    <dependency org="cj.studio.ecm" name="cj.studio.ecm.corelib" rev="2.3.6" conf="compile-&gt;default"/>
+    <dependency org="cj.studio.gateway2" name="cj.studio.ecm.net" rev="2.3.7" conf="compile-&gt;default"/>
+    <dependency org="cj.studio.gateway2" name="cj.studio.gateway.socket" rev="2.3.7" conf="compile-&gt;default"/>
     <dependency org="junit" name="junit" rev="4.8.2" conf="testCompile-&gt;default"/>
   </dependencies>
 </ivy-module>

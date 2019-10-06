@@ -84,7 +84,7 @@ subprojects {
 				}
 			 
 		        repository(url: engineer_nexus){
-					authentication(userName:"admin",password:"admin123")
+					authentication(userName:"deployment",password:"deployment123")
 		        }
 			}
 		}
